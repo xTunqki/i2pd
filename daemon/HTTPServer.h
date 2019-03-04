@@ -87,7 +87,9 @@ namespace http
     void ShowTunnels (std::stringstream& s);
     void ShowTransitTunnels (std::stringstream& s);
     void ShowTransports (std::stringstream& s);
+	#ifdef WITH_SAM
     void ShowSAMSessions (std::stringstream& s);
+	#endif
     void ShowI2PTunnels (std::stringstream& s);
     void ShowLocalDestination (std::stringstream& s, const std::string& b32);
 } // http

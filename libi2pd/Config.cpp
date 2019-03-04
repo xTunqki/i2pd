@@ -61,11 +61,11 @@ namespace config {
 			("ntcp", value<bool>()->default_value(true),                      "Enable NTCP transport (default: enabled)")
 			("ssu", value<bool>()->default_value(true),                       "Enable SSU transport (default: enabled)")
 			("ntcpproxy", value<std::string>()->default_value(""),            "Proxy URL for NTCP transport")
-#ifdef _WIN32
+			#ifdef _WIN32
 			("svcctl", value<std::string>()->default_value(""),               "Windows service management ('install' or 'remove')")
 			("insomnia", bool_switch()->default_value(false),                 "Prevent system from sleeping (default: disabled)")
 			("close", value<std::string>()->default_value("ask"),             "Action on close: minimize, exit, ask")
-#endif
+			#endif
 		;
 
 		options_description limits("Limits options");
@@ -158,9 +158,9 @@ namespace config {
 		;
 
 		bool upnp_default = false;
-#if (defined(USE_UPNP) && (defined(WIN32_APP) || defined(ANDROID)))
+		#if (defined(USE_UPNP) && (defined(WIN32_APP) || defined(ANDROID)))
 		upnp_default = true; // enable UPNP for windows GUI and android by default
-#endif
+		#endif
 		options_description upnp("UPnP options");
 		upnp.add_options()
 			("upnp.enabled", value<bool>()->default_value(upnp_default), "Enable or disable UPnP: automatic port forwarding")
@@ -170,11 +170,11 @@ namespace config {
 		options_description precomputation("Precomputation options");
 		precomputation.add_options()
 			("precomputation.elgamal",
-#if defined(__x86_64__)
+				#if defined(__x86_64__)
 				value<bool>()->default_value(false),
-#else
+				#else
 				value<bool>()->default_value(true),
-#endif
+				#endif
 				"Enable or disable elgamal precomputation table")
 		;
 
@@ -200,7 +200,7 @@ namespace config {
 				"https://reseed.onion.im/,"
 				"https://itoopie.atomike.ninja/,"
 				"https://i2pseed.creativecowpat.net:8443/,"
-                "https://i2p.novg.net/"
+				"https://i2p.novg.net/"
 			),                                                            "Reseed URLs, separated by comma")
 		;
 
@@ -313,12 +313,12 @@ namespace config {
 					  << BOOST_VERSION / 100 % 1000 << "."  // min. version
 					  << BOOST_VERSION % 100                // patch version
 					  << std::endl;
-#if defined(OPENSSL_VERSION_TEXT) 
+			#if defined(OPENSSL_VERSION_TEXT)
 			std::cout << OPENSSL_VERSION_TEXT << std::endl;
-#endif
-#if defined(LIBRESSL_VERSION_TEXT)
+			#endif
+			#if defined(LIBRESSL_VERSION_TEXT)
 			std::cout << LIBRESSL_VERSION_TEXT << std::endl;
-#endif
+			#endif
 
 			exit(EXIT_SUCCESS);
 		}

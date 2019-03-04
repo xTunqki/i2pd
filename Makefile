@@ -13,12 +13,24 @@ DAEMON_SRC_DIR := daemon
 
 include filelist.mk
 
+# Core settings
 USE_AESNI	:= yes
 USE_AVX		:= yes
 USE_STATIC	:= no
 USE_MESHNET	:= no
 USE_UPNP	:= no
 DEBUG		:= yes
+
+# Client modules
+USE_I2PC	:= yes
+USE_I2CP	:= yes
+USE_SAM		:= yes
+USE_BOB		:= yes
+# end
+
+ifeq ($(USE_MESHNET),yes)
+	NEEDED_CXXFLAGS += -DMESHNET
+endif
 
 ifeq ($(DEBUG),yes)
 	CXX_DEBUG = -g
@@ -27,6 +39,18 @@ else
 	LD_DEBUG = -s
 endif
 
+ifeq ($(USE_I2PC),yes)
+	NEEDED_CXXFLAGS += -DWITH_I2PC
+endif
+ifeq ($(USE_I2CP),yes)
+	NEEDED_CXXFLAGS += -DWITH_I2CP
+endif
+ifeq ($(USE_SAM),yes)
+	NEEDED_CXXFLAGS += -DWITH_SAM
+endif
+ifeq ($(USE_BOB),yes)
+	NEEDED_CXXFLAGS += -DWITH_BOB
+endif
 ifeq ($(WEBSOCKETS),1)
 	NEEDED_CXXFLAGS += -DWITH_EVENTS
 endif
@@ -49,10 +73,6 @@ else ifneq (, $(findstring mingw, $(SYS))$(findstring cygwin, $(SYS)))
 	include Makefile.mingw
 else # not supported
 	$(error Not supported platform)
-endif
-
-ifeq ($(USE_MESHNET),yes)
-	NEEDED_CXXFLAGS += -DMESHNET
 endif
 
 NEEDED_CXXFLAGS += -I$(LIB_SRC_DIR) -I$(LIB_CLIENT_SRC_DIR)

@@ -1,3 +1,4 @@
+#ifdef WITH_I2PC
 #ifndef I2P_CONTROL_H__
 #define I2P_CONTROL_H__
 
@@ -105,9 +106,15 @@ namespace client
 			void I2PTunnelInfoHandler (std::ostringstream& results);
 			void HTTPProxyInfoHandler (std::ostringstream& results);
 			void SOCKSInfoHandler (std::ostringstream& results);
+			#ifdef WITH_SAM
 			void SAMInfoHandler (std::ostringstream& results);
+			#endif
+			#ifdef WITH_BOB
 			void BOBInfoHandler (std::ostringstream& results);
+			#endif
+			#ifdef WITH_I2CP
 			void I2CPInfoHandler (std::ostringstream& results);
+			#endif
 
 		private:
 
@@ -131,4 +138,5 @@ namespace client
 }
 }
 
+#endif
 #endif

@@ -75,9 +75,13 @@ namespace http {
 	const char HTTP_PAGE_TRANSPORTS[] = "transports";
 	const char HTTP_PAGE_LOCAL_DESTINATIONS[] = "local_destinations";
 	const char HTTP_PAGE_LOCAL_DESTINATION[] = "local_destination";
+	#ifdef WITH_I2CP
 	const char HTTP_PAGE_I2CP_LOCAL_DESTINATION[] = "i2cp_local_destination";
+	#endif
+	#ifdef WITH_SAM
 	const char HTTP_PAGE_SAM_SESSIONS[] = "sam_sessions";
 	const char HTTP_PAGE_SAM_SESSION[] = "sam_session";
+	#endif
 	const char HTTP_PAGE_I2P_TUNNELS[] = "i2p_tunnels";
 	const char HTTP_PAGE_COMMANDS[] = "commands";
 	const char HTTP_PAGE_LEASESETS[] = "leasesets";
@@ -89,7 +93,9 @@ namespace http {
 	const char HTTP_COMMAND_RUN_PEER_TEST[] = "run_peer_test";
 	const char HTTP_COMMAND_RELOAD_CONFIG[] = "reload_config";
 	const char HTTP_COMMAND_LOGLEVEL[] = "set_loglevel";
+	#ifdef WITH_SAM
 	const char HTTP_PARAM_SAM_SESSION_ID[] = "id";
+	#endif
 	const char HTTP_PARAM_ADDRESS[] = "address";
 
 	static std::string ConvertTime (uint64_t time);
@@ -183,8 +189,10 @@ namespace http {
 			"  <a href=\"" << webroot << "?page=" << HTTP_PAGE_TRANSIT_TUNNELS << "\">Transit tunnels</a><br>\r\n"
 			"  <a href=\"" << webroot << "?page=" << HTTP_PAGE_TRANSPORTS << "\">Transports</a><br>\r\n"
 			"  <a href=\"" << webroot << "?page=" << HTTP_PAGE_I2P_TUNNELS << "\">I2P tunnels</a><br>\r\n";
+		#ifdef WITH_SAM
 		if (i2p::client::context.GetSAMBridge ())
 			s << "  <a href=\"" << webroot << "?page=" << HTTP_PAGE_SAM_SESSIONS << "\">SAM sessions</a><br>\r\n";
+		#endif
 		s <<
 			"</div>\r\n"
 			"<div class=right>";
@@ -308,17 +316,25 @@ namespace http {
 		s << "<b>Client Tunnels:</b> " << std::to_string(clientTunnelCount) << " ";
 		s << "<b>Transit Tunnels:</b> " << std::to_string(transitTunnelCount) << "<br>\r\n<br>\r\n";
 
-        if(outputFormat==OutputFormatEnum::forWebConsole) {
-            s << "<table><caption>Services</caption><tr><th>Service</th><th>State</th></tr>\r\n";
-            s << "<tr><td>" << "HTTP Proxy"		<< "</td><td><div class='" << ((i2p::client::context.GetHttpProxy ())			? "enabled" : "disabled") << "'></div></td></tr>\r\n";
-            s << "<tr><td>" << "SOCKS Proxy"	<< "</td><td><div class='" << ((i2p::client::context.GetSocksProxy ())			? "enabled" : "disabled") << "'></div></td></tr>\r\n";
-            s << "<tr><td>" << "BOB"			<< "</td><td><div class='" << ((i2p::client::context.GetBOBCommandChannel ())	? "enabled" : "disabled") << "'></div></td></tr>\r\n";
-            s << "<tr><td>" << "SAM"			<< "</td><td><div class='" << ((i2p::client::context.GetSAMBridge ())			? "enabled" : "disabled") << "'></div></td></tr>\r\n";
-            s << "<tr><td>" << "I2CP"			<< "</td><td><div class='" << ((i2p::client::context.GetI2CPServer ())			? "enabled" : "disabled") << "'></div></td></tr>\r\n";
-            bool i2pcontrol; i2p::config::GetOption("i2pcontrol.enabled", i2pcontrol);
-            s << "<tr><td>" << "I2PControl"		<< "</td><td><div class='" << ((i2pcontrol) 									? "enabled" : "disabled") << "'></div></td></tr>\r\n";
-            s << "</table>\r\n";
-        }
+		if(outputFormat==OutputFormatEnum::forWebConsole) {
+			s << "<table><caption>Services</caption><tr><th>Service</th><th>State</th></tr>\r\n";
+			s << "<tr><td>" << "HTTP Proxy"		<< "</td><td><div class='" << ((i2p::client::context.GetHttpProxy ())			? "enabled" : "disabled") << "'></div></td></tr>\r\n";
+			s << "<tr><td>" << "SOCKS Proxy"	<< "</td><td><div class='" << ((i2p::client::context.GetSocksProxy ())			? "enabled" : "disabled") << "'></div></td></tr>\r\n";
+			#ifdef WITH_BOB
+			s << "<tr><td>" << "BOB"			<< "</td><td><div class='" << ((i2p::client::context.GetBOBCommandChannel ())	? "enabled" : "disabled") << "'></div></td></tr>\r\n";
+			#endif
+			#ifdef WITH_SAM
+			s << "<tr><td>" << "SAM"			<< "</td><td><div class='" << ((i2p::client::context.GetSAMBridge ())			? "enabled" : "disabled") << "'></div></td></tr>\r\n";
+			#endif
+			#ifdef WITH_I2CP
+			s << "<tr><td>" << "I2CP"			<< "</td><td><div class='" << ((i2p::client::context.GetI2CPServer ())			? "enabled" : "disabled") << "'></div></td></tr>\r\n";
+			#endif
+			#ifdef WITH_I2PC
+			bool i2pcontrol; i2p::config::GetOption("i2pcontrol.enabled", i2pcontrol);
+			s << "<tr><td>" << "I2PControl"		<< "</td><td><div class='" << ((i2pcontrol) 									? "enabled" : "disabled") << "'></div></td></tr>\r\n";
+			#endif
+			s << "</table>\r\n";
+		}
 	}
 
 	void ShowLocalDestinations (std::stringstream& s)
@@ -332,6 +348,7 @@ namespace http {
 			s << i2p::client::context.GetAddressBook ().ToAddress(ident) << "</a><br>\r\n" << std::endl;
 		}
 
+		#ifdef WITH_I2CP
 		auto i2cpServer = i2p::client::context.GetI2CPServer ();
 		if (i2cpServer && !(i2cpServer->GetSessions ().empty ()))
 		{
@@ -348,6 +365,7 @@ namespace http {
 				}
 			}
 		}
+		#endif
 	}
 
 	static void ShowLeaseSetDestination (std::stringstream& s, std::shared_ptr<const i2p::client::LeaseSetDestination> dest)
@@ -437,6 +455,7 @@ namespace http {
 		}
 	}
 
+	#ifdef WITH_I2CP
 	static void ShowI2CPLocalDestination (std::stringstream& s, const std::string& id)
 	{
 		auto i2cpServer = i2p::client::context.GetI2CPServer ();
@@ -452,6 +471,7 @@ namespace http {
 		else
 			ShowError(s, "I2CP is not enabled");
 	}
+	#endif
 
 	void ShowLeasesSets(std::stringstream& s)
 	{
@@ -666,6 +686,7 @@ namespace http {
 		}
 	}
 
+	#ifdef WITH_SAM
 	void ShowSAMSessions (std::stringstream& s)
 	{
 		std::string webroot; i2p::config::GetOption("http.webroot", webroot);
@@ -715,6 +736,7 @@ namespace http {
 			s << "<br>\r\n";
 		}
 	}
+	#endif
 
 	void ShowI2PTunnels (std::stringstream& s)
 	{
@@ -960,12 +982,16 @@ namespace http {
 			ShowLocalDestinations (s);
 		else if (page == HTTP_PAGE_LOCAL_DESTINATION)
 			ShowLocalDestination (s, params["b32"]);
+		#ifdef WITH_I2CP
 		else if (page == HTTP_PAGE_I2CP_LOCAL_DESTINATION)
 			ShowI2CPLocalDestination (s, params["i2cp_id"]);
+		#endif
+		#ifdef WITH_SAM
 		else if (page == HTTP_PAGE_SAM_SESSIONS)
 			ShowSAMSessions (s);
 		else if (page == HTTP_PAGE_SAM_SESSION)
 			ShowSAMSession (s, params["sam_id"]);
+		#endif
 		else if (page == HTTP_PAGE_I2P_TUNNELS)
 			ShowI2PTunnels (s);
 		else if (page == HTTP_PAGE_LEASESETS)

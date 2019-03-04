@@ -1,3 +1,5 @@
+#ifdef WITH_SAM
+
 #ifndef SAM_H__
 #define SAM_H__
 
@@ -219,4 +221,5 @@ namespace client
 }
 }
 
+#endif
 #endif

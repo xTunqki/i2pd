@@ -1,3 +1,5 @@
+#ifdef WITH_BOB
+
 #include <string.h>
 #include "Log.h"
 #include "ClientContext.h"
@@ -752,3 +754,4 @@ namespace client
 }
 }
 
+#endif

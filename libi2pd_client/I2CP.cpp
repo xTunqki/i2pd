@@ -6,6 +6,8 @@
 * See full license text in LICENSE file at top of project tree
 */
 
+#ifdef WITH_I2CP
+
 #include <string.h>
 #include <stdlib.h>
 #include <openssl/rand.h>
@@ -194,7 +196,7 @@ namespace client
 			auto s = shared_from_this ();
 			m_Socket->async_read_some (boost::asio::buffer (m_Header, 1),
 				[s](const boost::system::error_code& ecode, std::size_t bytes_transferred)
-				    {
+					{
 						if (!ecode && bytes_transferred > 0 && s->m_Header[0] == I2CP_PROTOCOL_BYTE)
 							s->ReceiveHeader ();
 						else
@@ -730,7 +732,7 @@ namespace client
 		m_IsRunning (false), m_Thread (nullptr),
 		m_Acceptor (m_Service,
 #ifdef ANDROID
-            I2CPSession::proto::endpoint(std::string (1, '\0') + interface)) // leading 0 for abstract address
+			I2CPSession::proto::endpoint(std::string (1, '\0') + interface)) // leading 0 for abstract address
 #else
 			I2CPSession::proto::endpoint(boost::asio::ip::address::from_string(interface), port))
 #endif
@@ -840,4 +842,4 @@ namespace client
 	}
 }
 }
-
+#endif

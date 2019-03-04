@@ -1,3 +1,5 @@
+#ifdef WITH_I2PC
+
 #include <stdio.h>
 #include <sstream>
 #include <openssl/x509.h>
@@ -98,9 +100,15 @@ namespace client
 		m_ClientServicesInfoHandlers["I2PTunnel"] = &I2PControlService::I2PTunnelInfoHandler;
 		m_ClientServicesInfoHandlers["HTTPProxy"] = &I2PControlService::HTTPProxyInfoHandler;
 		m_ClientServicesInfoHandlers["SOCKS"] = &I2PControlService::SOCKSInfoHandler;
+		#ifdef WITH_SAM
 		m_ClientServicesInfoHandlers["SAM"] = &I2PControlService::SAMInfoHandler;
+		#endif
+		#ifdef WITH_BOB
 		m_ClientServicesInfoHandlers["BOB"] = &I2PControlService::BOBInfoHandler;
+		#endif
+		#ifdef WITH_I2CP
 		m_ClientServicesInfoHandlers["I2CP"] = &I2PControlService::I2CPInfoHandler;
+		#endif
 	}
 
 	I2PControlService::~I2PControlService ()
@@ -711,6 +719,7 @@ namespace client
 		InsertParam (results, "SOCKS", pt);
 	}
 
+	#ifdef WITH_SAM
 	void I2PControlService::SAMInfoHandler (std::ostringstream& results)
 	{
 		boost::property_tree::ptree pt;
@@ -746,7 +755,9 @@ namespace client
 
 		InsertParam (results, "SAM", pt);
 	}
+	#endif
 
+	#ifdef WITH_BOB
 	void I2PControlService::BOBInfoHandler (std::ostringstream& results)
 	{
 		boost::property_tree::ptree pt;
@@ -761,7 +772,9 @@ namespace client
 
 		InsertParam (results, "BOB", pt);
 	}
+	#endif
 
+	#ifdef WITH_I2CP
 	void I2PControlService::I2CPInfoHandler (std::ostringstream& results)
 	{
 		boost::property_tree::ptree pt;
@@ -776,5 +789,7 @@ namespace client
 
 		InsertParam (results, "I2CP", pt);
 	}
+	#endif
 }
 }
+#endif

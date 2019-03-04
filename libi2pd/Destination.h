@@ -53,7 +53,7 @@ namespace client
 	const char I2CP_PARAM_INBOUND_NICKNAME[] = "inbound.nickname";
 	const char I2CP_PARAM_OUTBOUND_NICKNAME[] = "outbound.nickname";
 	const char I2CP_PARAM_LEASESET_TYPE[] = "i2cp.leaseSetType";
-	const int DEFAULT_LEASESET_TYPE = 1;		
+	const int DEFAULT_LEASESET_TYPE = 1;
 	const char I2CP_PARAM_LEASESET_ENCRYPTION_TYPE[] = "i2cp.leaseSetEncType";
 
 	// latency

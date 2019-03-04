@@ -469,7 +469,7 @@ public class I2PDActivity extends Activity {
 				Log.e(TAG, "", tr);
 			}
 
-			// copy assets. If processed file exists, it won't be overwrited
+			// copy assets. If processed file exists, it won't be overwritten
 			copyAsset("addressbook");
 			copyAsset("certificates");
 			copyAsset("tunnels.d");

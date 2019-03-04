@@ -19,8 +19,16 @@ namespace client
 	ClientContext context;
 
 	ClientContext::ClientContext (): m_SharedLocalDestination (nullptr),
-		m_HttpProxy (nullptr), m_SocksProxy (nullptr), m_SamBridge (nullptr),
-		m_BOBCommandChannel (nullptr), m_I2CPServer (nullptr)
+		m_HttpProxy (nullptr), m_SocksProxy (nullptr)
+		#ifdef WITH_SAM
+		, m_SamBridge (nullptr)
+		#endif
+		#ifdef WITH_BOB
+		, m_BOBCommandChannel (nullptr)
+		#endif
+		#ifdef WITH_I2CP
+		, m_I2CPServer (nullptr)
+		#endif
 	{
 	}
 
@@ -28,9 +36,15 @@ namespace client
 	{
 		delete m_HttpProxy;
 		delete m_SocksProxy;
+		#ifdef WITH_SAM
 		delete m_SamBridge;
+		#endif
+		#ifdef WITH_BOB
 		delete m_BOBCommandChannel;
+		#endif
+		#ifdef WITH_I2CP
 		delete m_I2CPServer;
+		#endif
 	}
 
 	void ClientContext::Start ()
@@ -39,7 +53,7 @@ namespace client
 		if (!m_SharedLocalDestination)
 			CreateNewSharedLocalDestination ();
 
-		// addressbook	
+		// addressbook
 		m_AddressBook.Start ();
 
 		// HTTP proxy
@@ -51,6 +65,7 @@ namespace client
 		// I2P tunnels
 		ReadTunnels ();
 
+		#ifdef WITH_SAM
 		// SAM
 		bool sam; i2p::config::GetOption("sam.enabled", sam);
 		if (sam) {
@@ -58,13 +73,15 @@ namespace client
 			uint16_t    samPort; i2p::config::GetOption("sam.port",    samPort);
 			LogPrint(eLogInfo, "Clients: starting SAM bridge at ", samAddr, ":", samPort);
 			try {
-			  m_SamBridge = new SAMBridge (samAddr, samPort);
-			  m_SamBridge->Start ();
+				m_SamBridge = new SAMBridge (samAddr, samPort);
+				m_SamBridge->Start ();
 			} catch (std::exception& e) {
-			  LogPrint(eLogError, "Clients: Exception in SAM bridge: ", e.what());
+				LogPrint(eLogError, "Clients: Exception in SAM bridge: ", e.what());
 			}
 		}
+		#endif
 
+		#ifdef WITH_BOB
 		// BOB
 		bool bob; i2p::config::GetOption("bob.enabled", bob);
 		if (bob) {
@@ -72,13 +89,15 @@ namespace client
 			uint16_t    bobPort; i2p::config::GetOption("bob.port",    bobPort);
 			LogPrint(eLogInfo, "Clients: starting BOB command channel at ", bobAddr, ":", bobPort);
 			try {
-			  m_BOBCommandChannel = new BOBCommandChannel (bobAddr, bobPort);
-			  m_BOBCommandChannel->Start ();
+				m_BOBCommandChannel = new BOBCommandChannel (bobAddr, bobPort);
+				m_BOBCommandChannel->Start ();
 			} catch (std::exception& e) {
-			  LogPrint(eLogError, "Clients: Exception in BOB bridge: ", e.what());
+				LogPrint(eLogError, "Clients: Exception in BOB bridge: ", e.what());
 			}
 		}
+		#endif
 
+		#ifdef WITH_I2CP
 		// I2CP
 		bool i2cp; i2p::config::GetOption("i2cp.enabled", i2cp);
 		if (i2cp)
@@ -96,6 +115,7 @@ namespace client
 				LogPrint(eLogError, "Clients: Exception in I2CP: ", e.what());
 			}
 		}
+		#endif
 
 		m_AddressBook.StartResolvers ();
 
@@ -139,6 +159,7 @@ namespace client
 		}
 		m_ServerTunnels.clear ();
 
+		#ifdef WITH_SAM
 		if (m_SamBridge)
 		{
 			LogPrint(eLogInfo, "Clients: stopping SAM bridge");
@@ -146,7 +167,9 @@ namespace client
 			delete m_SamBridge;
 			m_SamBridge = nullptr;
 		}
+		#endif
 
+		#ifdef WITH_BOB
 		if (m_BOBCommandChannel)
 		{
 			LogPrint(eLogInfo, "Clients: stopping BOB command channel");
@@ -154,7 +177,9 @@ namespace client
 			delete m_BOBCommandChannel;
 			m_BOBCommandChannel = nullptr;
 		}
+		#endif
 
+		#ifdef WITH_I2CP
 		if (m_I2CPServer)
 		{
 			LogPrint(eLogInfo, "Clients: stopping I2CP");
@@ -162,6 +187,7 @@ namespace client
 			delete m_I2CPServer;
 			m_I2CPServer = nullptr;
 		}
+		#endif
 
 		LogPrint(eLogInfo, "Clients: stopping AddressBook");
 		m_AddressBook.Stop ();
@@ -215,8 +241,8 @@ namespace client
 		{
 			m_SocksProxy->Stop ();
 			m_SocksProxy = nullptr;
-		}		
-		ReadSocksProxy ();	
+		}
+		ReadSocksProxy ();
 
 		// delete unused destinations
 		std::unique_lock<std::mutex> l(m_DestinationsMutex);
@@ -372,13 +398,13 @@ namespace client
 	template<typename Section, typename Type>
 	std::string ClientContext::GetI2CPOption (const Section& section, const std::string& name, const Type& value) const
 	{
-        return section.second.get (boost::property_tree::ptree::path_type (name, '/'), std::to_string (value));
+		return section.second.get (boost::property_tree::ptree::path_type (name, '/'), std::to_string (value));
 	}
 
 	template<typename Section>
 	std::string ClientContext::GetI2CPStringOption (const Section& section, const std::string& name, const std::string& value) const
 	{
-        return section.second.get (boost::property_tree::ptree::path_type (name, '/'), value);
+		return section.second.get (boost::property_tree::ptree::path_type (name, '/'), value);
 	}
 
 	template<typename Section>
@@ -394,7 +420,7 @@ namespace client
 		options[I2CP_PARAM_STREAMING_INITIAL_ACK_DELAY] = GetI2CPOption(section, I2CP_PARAM_STREAMING_INITIAL_ACK_DELAY, DEFAULT_INITIAL_ACK_DELAY); 
 		options[I2CP_PARAM_LEASESET_TYPE] = GetI2CPOption(section, I2CP_PARAM_LEASESET_TYPE, DEFAULT_LEASESET_TYPE);
 		std::string encType = GetI2CPStringOption(section, I2CP_PARAM_LEASESET_ENCRYPTION_TYPE, "");
-		if (encType.length () > 0) options[I2CP_PARAM_LEASESET_ENCRYPTION_TYPE] = encType;		
+		if (encType.length () > 0) options[I2CP_PARAM_LEASESET_ENCRYPTION_TYPE] = encType;
 	}
 
 	void ClientContext::ReadI2CPOptionsFromConfig (const std::string& prefix, std::map<std::string, std::string>& options) const

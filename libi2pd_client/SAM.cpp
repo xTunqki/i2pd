@@ -1,3 +1,5 @@
+#ifdef WITH_SAM
+
 #include <string.h>
 #include <stdio.h>
 #ifdef _MSC_VER
@@ -1214,3 +1216,4 @@ namespace client
 	}
 }
 }
+#endif

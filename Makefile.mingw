@@ -2,7 +2,7 @@ USE_WIN32_APP=yes
 CXX = g++
 WINDRES = windres
 CXXFLAGS := ${CXX_DEBUG} -D_MT -DWIN32 -D_WINDOWS -DWIN32_LEAN_AND_MEAN
-NEEDED_CXXFLAGS = -std=c++11
+NEEDED_CXXFLAGS += -std=c++11
 INCFLAGS = -Idaemon -I.
 LDFLAGS := ${LD_DEBUG} -Wl,-Bstatic -static-libgcc -static-libstdc++
 

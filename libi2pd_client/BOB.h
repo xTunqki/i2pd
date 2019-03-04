@@ -1,3 +1,5 @@
+#ifdef WITH_BOB
+
 #ifndef BOB_H__
 #define BOB_H__
 
@@ -236,4 +238,4 @@ namespace client
 }
 
 #endif
-
+#endif

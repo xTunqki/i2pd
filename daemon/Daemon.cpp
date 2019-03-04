@@ -19,7 +19,9 @@
 #include "Streaming.h"
 #include "Destination.h"
 #include "HTTPServer.h"
+#ifdef WITH_I2PC
 #include "I2PControl.h"
+#endif
 #include "ClientContext.h"
 #include "Crypto.h"
 #include "UPnP.h"
@@ -40,7 +42,9 @@ namespace i2p
 			~Daemon_Singleton_Private() {};
 
 			std::unique_ptr<i2p::http::HTTPServer> httpServer;
+			#ifdef WITH_I2PC
 			std::unique_ptr<i2p::client::I2PControlService> m_I2PControlService;
+			#endif
 			std::unique_ptr<i2p::transport::UPnP> UPnP;
 			std::unique_ptr<i2p::util::NTPTimeSync> m_NTPSync;
 #ifdef WITH_EVENTS
@@ -138,8 +142,8 @@ namespace i2p
 			i2p::context.SetNetID (netID);
 			i2p::context.Init ();
 
-			bool ipv6;		i2p::config::GetOption("ipv6", ipv6);
-			bool ipv4;		i2p::config::GetOption("ipv4", ipv4);
+			bool ipv6; i2p::config::GetOption("ipv6", ipv6);
+			bool ipv4; i2p::config::GetOption("ipv4", ipv4);
 #ifdef MESHNET
 			// manual override for meshnet
 			ipv4 = false;
@@ -151,8 +155,8 @@ namespace i2p
 				LogPrint(eLogInfo, "Daemon: accepting incoming connections at port ", port);
 				i2p::context.UpdatePort (port);
 			}
-			i2p::context.SetSupportsV6		 (ipv6);
-			i2p::context.SetSupportsV4		 (ipv4);
+			i2p::context.SetSupportsV6 (ipv6);
+			i2p::context.SetSupportsV4 (ipv4);
 
 			bool ntcp2; i2p::config::GetOption("ntcp2.enabled", ntcp2);
 			if (ntcp2)
@@ -312,7 +316,7 @@ namespace i2p
 			bool http; i2p::config::GetOption("http.enabled", http);
 			if (http) {
 				std::string httpAddr; i2p::config::GetOption("http.address", httpAddr);
-				uint16_t		httpPort; i2p::config::GetOption("http.port",		 httpPort);
+				uint16_t    httpPort; i2p::config::GetOption("http.port",    httpPort);
 				LogPrint(eLogInfo, "Daemon: starting HTTP Server at ", httpAddr, ":", httpPort);
 				d.httpServer = std::unique_ptr<i2p::http::HTTPServer>(new i2p::http::HTTPServer(httpAddr, httpPort));
 				d.httpServer->Start();
@@ -325,6 +329,7 @@ namespace i2p
 			LogPrint(eLogInfo, "Daemon: starting Client");
 			i2p::client::context.Start ();
 
+			#ifdef WITH_I2PC
 			// I2P Control Protocol
 			bool i2pcontrol; i2p::config::GetOption("i2pcontrol.enabled", i2pcontrol);
 			if (i2pcontrol) {
@@ -334,18 +339,19 @@ namespace i2p
 				d.m_I2PControlService = std::unique_ptr<i2p::client::I2PControlService>(new i2p::client::I2PControlService (i2pcpAddr, i2pcpPort));
 				d.m_I2PControlService->Start ();
 			}
-#ifdef WITH_EVENTS
+			#endif
 
+			#ifdef WITH_EVENTS
 			bool websocket; i2p::config::GetOption("websockets.enabled", websocket);
 			if(websocket) {
 				std::string websocketAddr; i2p::config::GetOption("websockets.address", websocketAddr);
-				uint16_t		websocketPort; i2p::config::GetOption("websockets.port",		websocketPort);
+				uint16_t    websocketPort; i2p::config::GetOption("websockets.port",    websocketPort);
 				LogPrint(eLogInfo, "Daemon: starting Websocket server at ", websocketAddr, ":", websocketPort);
 				d.m_WebsocketServer = std::unique_ptr<i2p::event::WebsocketServer>(new i2p::event::WebsocketServer (websocketAddr, websocketPort));
 				d.m_WebsocketServer->Start();
 				i2p::event::core.SetListener(d.m_WebsocketServer->ToListener());
 			}
-#endif
+			#endif
 			return true;
 		}
 
@@ -381,19 +387,21 @@ namespace i2p
 				d.httpServer->Stop();
 				d.httpServer = nullptr;
 			}
+			#ifdef WITH_I2PC
 			if (d.m_I2PControlService)
 			{
 				LogPrint(eLogInfo, "Daemon: stopping I2PControl");
 				d.m_I2PControlService->Stop ();
 				d.m_I2PControlService = nullptr;
 			}
-#ifdef WITH_EVENTS
+			#endif
+			#ifdef WITH_EVENTS
 			if (d.m_WebsocketServer) {
 				LogPrint(eLogInfo, "Daemon: stopping Websocket server");
 				d.m_WebsocketServer->Stop();
 				d.m_WebsocketServer = nullptr;
 			}
-#endif
+			#endif
 			i2p::crypto::TerminateCrypto ();
 			i2p::log::Logger().Stop();
 
