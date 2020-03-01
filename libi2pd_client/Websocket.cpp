@@ -22,7 +22,7 @@ namespace i2p
 
 		typedef websocketpp::server<websocketpp::config::asio> ServerImpl;
 		typedef websocketpp::connection_hdl ServerConn;
-
+		
 		class WebsocketServerImpl : public EventListener
 		{
 		private:
@@ -149,11 +149,11 @@ namespace i2p
 				write_json(ss, event);
 				std::string s = ss.str();
 
-				 ConnList::iterator it;
-				 for (it = m_conns.begin(); it != m_conns.end(); ++it) {
-					 ServerImpl::connection_ptr con = m_server.get_con_from_hdl(*it);
-					 con->send(s);
-				 }
+				ConnList::iterator it;
+				for (it = m_conns.begin(); it != m_conns.end(); ++it) {
+					ServerImpl::connection_ptr con = m_server.get_con_from_hdl(*it);
+					con->send(s);
+				}
 			}
 
 		private:

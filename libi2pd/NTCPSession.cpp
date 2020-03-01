@@ -29,7 +29,7 @@ namespace transport
 	{
 		std::shared_ptr<NTCPSession> session;
 	};
-	
+
 	NTCPSession::NTCPSession (NTCPServer& server, std::shared_ptr<const i2p::data::RouterInfo> in_RemoteRouter):
 		TransportSession (in_RemoteRouter, NTCP_ESTABLISH_TIMEOUT),
 		m_Server (server), m_Socket (m_Server.GetService ()),
@@ -471,7 +471,7 @@ namespace transport
 			LogPrint (eLogError, "NTCP: Phase 4 read error: ", ecode.message (), ". Check your clock");
 			if (ecode != boost::asio::error::operation_aborted)
 			{
-				 // this router doesn't like us
+				// this router doesn't like us
 				i2p::data::netdb.SetUnreachable (GetRemoteIdentity ()->GetIdentHash (), true);
 				Terminate ();
 			}
@@ -742,12 +742,10 @@ namespace transport
 		}
 	}
 
-
 	void NTCPSession::SendTimeSyncMessage ()
 	{
 		Send (nullptr);
 	}
-
 
 	void NTCPSession::SendI2NPMessages (const std::vector<std::shared_ptr<I2NPMessage> >& msgs)
 	{
@@ -902,7 +900,6 @@ namespace transport
 			}
 		}
 	}
-
 
 	void NTCPServer::Run ()
 	{
@@ -1199,7 +1196,6 @@ namespace transport
 
 	void NTCPServer::AfterSocksHandshake(std::shared_ptr<NTCPSession> conn, std::shared_ptr<boost::asio::deadline_timer> timer, const std::string & host, uint16_t port, RemoteAddressType addrtype)
 	{
-
 		// build request
 		size_t sz = 0;
 		uint8_t buff[256];

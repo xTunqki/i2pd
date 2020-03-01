@@ -13,8 +13,8 @@ namespace i2p
 namespace client
 {
 	LeaseSetDestination::LeaseSetDestination (boost::asio::io_service& service,
-	    bool isPublic, const std::map<std::string, std::string> * params):
-		m_Service (service), m_IsPublic (isPublic), m_PublishReplyToken (0), 
+		bool isPublic, const std::map<std::string, std::string> * params):
+		m_Service (service), m_IsPublic (isPublic), m_PublishReplyToken (0),
 		m_LastSubmissionTime (0), m_PublishConfirmationTimer (m_Service),
 		m_PublishVerificationTimer (m_Service), m_PublishDelayTimer (m_Service), m_CleanupTimer (m_Service),
 		m_LeaseSetType (DEFAULT_LEASESET_TYPE), m_AuthType (i2p::data::ENCRYPTED_LEASESET_AUTH_TYPE_NONE)
@@ -81,7 +81,7 @@ namespace client
 							m_AuthType = authType;
 						else
 							LogPrint (eLogError, "Destination: Unknown auth type ", authType);
-					}
+							}
 				}
 				it = params->find (I2CP_PARAM_LEASESET_PRIV_KEY);
 				if (it != params->end ())
@@ -157,13 +157,13 @@ namespace client
 
 	bool LeaseSetDestination::Reconfigure(std::map<std::string, std::string> params)
 	{
-		
+
 		auto itr = params.find("i2cp.dontPublishLeaseSet");
 		if (itr != params.end())
 		{
 			m_IsPublic = itr->second != "true";
 		}
-		
+
 		int inLen, outLen, inQuant, outQuant, numTags, minLatency, maxLatency;
 		std::map<std::string, int&> intOpts = {
 			{I2CP_PARAM_INBOUND_TUNNEL_LENGTH, inLen},
@@ -182,7 +182,7 @@ namespace client
 		outQuant = pool->GetNumOutboundTunnels();
 		minLatency = 0;
 		maxLatency = 0;
-		
+
 		for (auto & opt : intOpts)
 		{
 			itr = params.find(opt.first);
@@ -194,7 +194,7 @@ namespace client
 		pool->RequireLatency(minLatency, maxLatency);
 		return pool->Reconfigure(inLen, outLen, inQuant, outQuant);
 	}
-	
+
 	std::shared_ptr<i2p::data::LeaseSet> LeaseSetDestination::FindLeaseSet (const i2p::data::IdentHash& ident)
 	{
 		std::shared_ptr<i2p::data::LeaseSet> remoteLS;
@@ -263,7 +263,7 @@ namespace client
 		std::lock_guard<std::mutex> l(m_LeaseSetMutex);
 		return m_LeaseSet;
 	}
-		
+
 	void LeaseSetDestination::SetLeaseSet (std::shared_ptr<const i2p::data::LocalLeaseSet> newLeaseSet)
 	{
 		{
@@ -278,7 +278,7 @@ namespace client
 			{
 				s->m_PublishVerificationTimer.cancel ();
 				s->Publish ();
-			});	
+			});
 		}
 	}
 
@@ -587,7 +587,7 @@ namespace client
 			{
 				LogPrint (eLogWarning, "Destination: couldn't verify LeaseSet for ", GetIdentHash().ToBase32());
 				return;
-			}	
+			}
 			auto s = shared_from_this ();
 			// we must capture this for gcc 4.7 due the bug
 			RequestLeaseSet (ls->GetStoreHash (),
@@ -639,9 +639,9 @@ namespace client
 			if (requestComplete)
 				m_Service.post ([requestComplete](void){requestComplete (nullptr);});
 			return false;
-		}	
+		}
 		auto storeHash = dest->GetStoreHash ();
-		auto leaseSet = FindLeaseSet (storeHash);	
+		auto leaseSet = FindLeaseSet (storeHash);
 		if (leaseSet)
 		{
 			if (requestComplete)
@@ -822,9 +822,9 @@ namespace client
 		}
 	}
 
-	ClientDestination::ClientDestination (boost::asio::io_service& service, const i2p::data::PrivateKeys& keys, 
+	ClientDestination::ClientDestination (boost::asio::io_service& service, const i2p::data::PrivateKeys& keys,
 		bool isPublic, const std::map<std::string, std::string> * params):
-		LeaseSetDestination (service, isPublic, params), 
+		LeaseSetDestination (service, isPublic, params),
 		m_Keys (keys), m_StreamingAckDelay (DEFAULT_INITIAL_ACK_DELAY),
 		m_DatagramDestination (nullptr), m_RefCounter (0),
 		m_ReadyChecker(service)
@@ -839,21 +839,21 @@ namespace client
 			auto it = params->find (I2CP_PARAM_LEASESET_ENCRYPTION_TYPE);
 			if (it != params->end ())
 				m_EncryptionKeyType = std::stoi(it->second);
-		}		
+		}
 
-		memset (m_EncryptionPrivateKey, 0, 256); 
-		memset (m_EncryptionPublicKey, 0, 256);	
-		if (isPublic) 
+		memset (m_EncryptionPrivateKey, 0, 256);
+		memset (m_EncryptionPublicKey, 0, 256);
+		if (isPublic)
 			PersistTemporaryKeys ();
 		else
 			i2p::data::PrivateKeys::GenerateCryptoKeyPair (m_EncryptionKeyType, m_EncryptionPrivateKey, m_EncryptionPublicKey);
-			
+
 		m_Decryptor = i2p::data::PrivateKeys::CreateDecryptor (m_EncryptionKeyType, m_EncryptionPrivateKey);
 		if (isPublic)
 			LogPrint (eLogInfo, "Destination: Local address ", GetIdentHash().ToBase32 (), " created");
 
 		try
-		{	
+		{
 			if (params)
 			{
 				// extract streaming params
@@ -869,9 +869,9 @@ namespace client
 					{
 						m_AuthKeys = std::make_shared<std::vector<i2p::data::AuthPublicKey> >();
 						if (authType == i2p::data::ENCRYPTED_LEASESET_AUTH_TYPE_DH)
-							ReadAuthKey (I2CP_PARAM_LEASESET_CLIENT_DH, params);	
+							ReadAuthKey (I2CP_PARAM_LEASESET_CLIENT_DH, params);
 						else if (authType == i2p::data::ENCRYPTED_LEASESET_AUTH_TYPE_PSK)
-							ReadAuthKey (I2CP_PARAM_LEASESET_CLIENT_PSK, params);	
+							ReadAuthKey (I2CP_PARAM_LEASESET_CLIENT_PSK, params);
 						else
 							LogPrint (eLogError, "Destination: Unexpected auth type ", authType);
 						if (m_AuthKeys->size ())
@@ -879,7 +879,7 @@ namespace client
 						else
 						{
 							LogPrint (eLogError, "Destination: No auth keys read for auth type ", authType);
-							m_AuthKeys = nullptr;	
+							m_AuthKeys = nullptr;
 						}
 					}
 				}
@@ -987,7 +987,7 @@ namespace client
 					m_DatagramDestination->HandleDataMessagePayload (fromPort, toPort, buf, length, true);
 				else
 					LogPrint (eLogError, "Destination: Missing raw datagram destination");
-			break;	
+			break;
 			default:
 				LogPrint (eLogError, "Destination: Data: unexpected protocol ", buf[9]);
 		}
@@ -1090,7 +1090,7 @@ namespace client
 		return dest;
 	}
 
-  i2p::datagram::DatagramDestination * ClientDestination::CreateDatagramDestination ()
+	i2p::datagram::DatagramDestination * ClientDestination::CreateDatagramDestination ()
 	{
 		if (m_DatagramDestination == nullptr)
 			m_DatagramDestination = new i2p::datagram::DatagramDestination (GetSharedFromThis ());
@@ -1125,7 +1125,7 @@ namespace client
 
 		LogPrint (eLogInfo, "Destination: Creating new temporary keys of type for address ", ident, ".b32.i2p");
 		memset (m_EncryptionPrivateKey, 0, 256);
-		memset (m_EncryptionPublicKey, 0, 256);	
+		memset (m_EncryptionPublicKey, 0, 256);
 		i2p::data::PrivateKeys::GenerateCryptoKeyPair (m_EncryptionKeyType, m_EncryptionPrivateKey, m_EncryptionPublicKey);
 		// TODO:: persist crypto key type
 		std::ofstream f1 (path, std::ofstream::binary | std::ofstream::out);
@@ -1144,13 +1144,13 @@ namespace client
 		{
 			leaseSet = std::make_shared<i2p::data::LocalLeaseSet> (GetIdentity (), m_EncryptionPublicKey, tunnels);
 			// sign
-			Sign (leaseSet->GetBuffer (), leaseSet->GetBufferLen () - leaseSet->GetSignatureLen (), leaseSet->GetSignature ()); 
+			Sign (leaseSet->GetBuffer (), leaseSet->GetBufferLen () - leaseSet->GetSignatureLen (), leaseSet->GetSignature ());
 		}
 		else
 		{
 			// standard LS2 (type 3) first
 			auto keyLen = m_Decryptor ? m_Decryptor->GetPublicKeyLen () : 256;
-			bool isPublishedEncrypted = GetLeaseSetType () == i2p::data::NETDB_STORE_TYPE_ENCRYPTED_LEASESET2; 
+			bool isPublishedEncrypted = GetLeaseSetType () == i2p::data::NETDB_STORE_TYPE_ENCRYPTED_LEASESET2;
 			auto ls2 = std::make_shared<i2p::data::LocalLeaseSet2> (i2p::data::NETDB_STORE_TYPE_STANDARD_LEASESET2,
 				m_Keys, m_EncryptionKeyType, keyLen, m_EncryptionPublicKey, tunnels, IsPublic (), isPublishedEncrypted);
 			if (isPublishedEncrypted) // encrypt if type 5
@@ -1187,12 +1187,12 @@ namespace client
 					m_AuthKeys->push_back (pubKey);
 				else
 					LogPrint (eLogError, "Destination: Unexpected auth key ", it.second.substr (pos+1));
-			}	
+			}
 		}
 	}
 
 	RunnableClientDestination::RunnableClientDestination (const i2p::data::PrivateKeys& keys, bool isPublic, const std::map<std::string, std::string> * params):
-		RunnableService ("Destination"), 
+		RunnableService ("Destination"),
 		ClientDestination (GetIOService (), keys, isPublic, params)
 	{
 	}
@@ -1201,7 +1201,7 @@ namespace client
 	{
 		if (IsRunning ())
 			Stop ();
-	}	
+	}
 
 	void RunnableClientDestination::Start ()
 	{

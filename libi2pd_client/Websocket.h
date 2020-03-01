@@ -10,17 +10,19 @@ namespace i2p
 
 		class WebsocketServer
 		{
-		public:
-			WebsocketServer(const std::string & addr, int port);
-			~WebsocketServer();
+			public:
 
-			void Start();
-			void Stop();
+				WebsocketServer(const std::string & addr, int port);
+				~WebsocketServer();
 
-			EventListener * ToListener();
+				void Start();
+				void Stop();
 
-		private:
-			WebsocketServerImpl * m_impl;
+				EventListener * ToListener();
+
+			private:
+
+				WebsocketServerImpl * m_impl;
 		};
 
 	}

@@ -502,7 +502,7 @@ namespace transport
 			}
 			// decay
 			if (m_ReceivedMessages.size () > MAX_NUM_RECEIVED_MESSAGES ||
-			    i2p::util::GetSecondsSinceEpoch () > m_LastMessageReceivedTime + DECAY_INTERVAL)
+				i2p::util::GetSecondsSinceEpoch () > m_LastMessageReceivedTime + DECAY_INTERVAL)
 				m_ReceivedMessages.clear ();
 
 			ScheduleIncompleteMessagesCleanup ();
@@ -510,4 +510,3 @@ namespace transport
 	}
 }
 }
-

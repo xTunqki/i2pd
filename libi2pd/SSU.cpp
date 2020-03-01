@@ -328,10 +328,10 @@ namespace transport
 			{
 				if (!session || session->GetRemoteEndpoint () != packet->from) // we received packet for other session than previous
 				{
-					if (session) 
-					{ 
-						session->FlushData (); 
-						session = nullptr; 
+					if (session)
+					{
+						session->FlushData ();
+						session = nullptr;
 					}
 					auto it = sessions->find (packet->from);
 					if (it != sessions->end ())
@@ -557,7 +557,7 @@ namespace transport
 			{
 				return session->GetState () == eSessionStateEstablished && session != excluded;
 			}
-								);
+		);
 	}
 
 	template<typename Filter>
@@ -581,7 +581,7 @@ namespace transport
 			{
 				return session->GetState () == eSessionStateEstablished && session != excluded;
 			}
-								);
+		);
 	}
 
 	std::set<SSUSession *> SSUServer::FindIntroducers (int maxNumIntroducers)
@@ -597,7 +597,7 @@ namespace transport
 						session->GetState () == eSessionStateEstablished &&
 						ts < session->GetCreationTime () + SSU_TO_INTRODUCER_SESSION_DURATION;
 				}
-											);
+			);
 			if (session)
 			{
 				ret.insert (session.get ());
@@ -795,4 +795,3 @@ namespace transport
 	}
 }
 }
-

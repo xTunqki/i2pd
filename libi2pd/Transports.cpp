@@ -196,13 +196,13 @@ namespace transport
 				LogPrint(eLogError, "Transports: invalid NTCP proxy url ", ntcpproxy);
 			return;
 		}
-		// create NTCP2. TODO: move to acceptor	
-		bool ntcp2;  i2p::config::GetOption("ntcp2.enabled", ntcp2);
+		// create NTCP2. TODO: move to acceptor
+		bool ntcp2; i2p::config::GetOption("ntcp2.enabled", ntcp2);
 		if (ntcp2)
 		{
 			m_NTCP2Server = new NTCP2Server ();
 			m_NTCP2Server->Start ();
-		}	
+		}
 
 		// create acceptors
 		auto& addresses = context.GetRouterInfo ().GetAddresses ();
@@ -249,11 +249,11 @@ namespace transport
 		m_PeerCleanupTimer->expires_from_now (boost::posix_time::seconds(5*SESSION_CREATION_TIMEOUT));
 		m_PeerCleanupTimer->async_wait (std::bind (&Transports::HandlePeerCleanupTimer, this, std::placeholders::_1));
 
-                if (m_IsNAT)
-                {
-                    m_PeerTestTimer->expires_from_now (boost::posix_time::minutes(PEER_TEST_INTERVAL));
-                    m_PeerTestTimer->async_wait (std::bind (&Transports::HandlePeerTestTimer, this, std::placeholders::_1));
-                }
+		if (m_IsNAT)
+		{
+			m_PeerTestTimer->expires_from_now (boost::posix_time::minutes(PEER_TEST_INTERVAL));
+			m_PeerTestTimer->async_wait (std::bind (&Transports::HandlePeerTestTimer, this, std::placeholders::_1));
+		}
 	}
 
 	void Transports::Stop ()
@@ -371,7 +371,7 @@ namespace transport
 			{
 				auto r = netdb.FindRouter (ident);
 				{
-					std::unique_lock<std::mutex>	l(m_PeersMutex);
+					std::unique_lock<std::mutex> l(m_PeersMutex);
 					it = m_Peers.insert (std::pair<i2p::data::IdentHash, Peer>(ident, { 0, r, {},
 						i2p::util::GetSecondsSinceEpoch (), {} })).first;
 				}
@@ -405,7 +405,7 @@ namespace transport
 	{
 		if (peer.router) // we have RI already
 		{
-			if (!peer.numAttempts) // NTCP2 
+			if (!peer.numAttempts) // NTCP2
 			{
 				peer.numAttempts++;
 				if (m_NTCP2Server) // we support NTCP2
@@ -417,12 +417,12 @@ namespace transport
 						auto s = std::make_shared<NTCP2Session> (*m_NTCP2Server, peer.router);
 						m_NTCP2Server->Connect (address->host, address->port, s);
 						return true;
-					}	
-				}	
+					}
+				}
 			}
 			if (peer.numAttempts == 1) // NTCP1
 			{
-				peer.numAttempts++;	
+				peer.numAttempts++;
 				auto address = peer.router->GetNTCPAddress (!context.SupportsV6 ());
 				if (address && m_NTCPServer)
 				{
@@ -522,13 +522,13 @@ namespace transport
 			{
 				auto router = i2p::data::netdb.GetRandomPeerTestRouter (isv4); // v4 only if v4
 				if (router)
-					m_SSUServer->CreateSession (router, true, isv4);	// peer test
+					m_SSUServer->CreateSession (router, true, isv4); // peer test
 				else
 				{
 					// if not peer test capable routers found pick any
 					router = i2p::data::netdb.GetRandomRouter ();
 					if (router && router->IsSSU ())
-						m_SSUServer->CreateSession (router);		// no peer test
+						m_SSUServer->CreateSession (router); // no peer test
 				}
 			}
 			if (i2p::context.SupportsV6 ())
@@ -543,7 +543,7 @@ namespace transport
 						if (addr)
 							m_SSUServer->GetServiceV6 ().post ([this, router, addr]
 							{
-								m_SSUServer->CreateDirectSession (router, { addr->host, (uint16_t)addr->port }, false);				
+								m_SSUServer->CreateDirectSession (router, { addr->host, (uint16_t)addr->port }, false);
 							});
 					}
 				}
@@ -650,14 +650,14 @@ namespace transport
 			{
 				auto before = it->second.sessions.size ();
 				it->second.sessions.remove (session);
-				if (it->second.sessions.empty ()) 
+				if (it->second.sessions.empty ())
 				{
 					if (it->second.delayedMessages.size () > 0)
 					{
 						if (before > 0) // we had an active session before
 							it->second.numAttempts = 0; // start over
 						ConnectToPeer (ident, it->second);
-					}	
+					}
 					else
 					{
 						std::unique_lock<std::mutex> l(m_PeersMutex);
@@ -690,7 +690,7 @@ namespace transport
 					{
 						profile->TunnelNonReplied();
 					}
-					std::unique_lock<std::mutex>	l(m_PeersMutex);
+					std::unique_lock<std::mutex> l(m_PeersMutex);
 					it = m_Peers.erase (it);
 				}
 				else

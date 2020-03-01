@@ -84,7 +84,7 @@ namespace client
 			auto itr = m_ReadyCallbacks.begin();
 			while(itr != m_ReadyCallbacks.end())
 			{
-			    if(itr->second != NEVER_TIMES_OUT && now >= itr->second)
+				if(itr->second != NEVER_TIMES_OUT && now >= itr->second)
 				{
 					itr->first(boost::asio::error::timed_out);
 					itr = m_ReadyCallbacks.erase(itr);
@@ -94,9 +94,9 @@ namespace client
 			}
 		}
 		if(!ec && m_ReadyCallbacks.size())
-		    TriggerReadyCheckTimer();
+			TriggerReadyCheckTimer();
 		else
-		    m_ReadyTimerTriggered = false;
+			m_ReadyTimerTriggered = false;
 	}
 
 	void I2PService::CreateStream (StreamRequestComplete streamRequestComplete, const std::string& dest, int port) {
@@ -116,21 +116,21 @@ namespace client
 		if(m_ConnectTimeout && !m_LocalDestination->IsReady())
 		{
 			AddReadyCallback([this, streamRequestComplete, address, port] (const boost::system::error_code & ec) {
-					if(ec)
-					{
-						LogPrint(eLogWarning, "I2PService::CeateStream() ", ec.message());
-						streamRequestComplete(nullptr);
-					}
+				if(ec)
+				{
+					LogPrint(eLogWarning, "I2PService::CeateStream() ", ec.message());
+					streamRequestComplete(nullptr);
+				}
+				else
+				{	if (address->IsIdentHash ())
+						this->m_LocalDestination->CreateStream(streamRequestComplete, address->identHash, port);
 					else
-					{	if (address->IsIdentHash ())
-							this->m_LocalDestination->CreateStream(streamRequestComplete, address->identHash, port);
-						else
-							this->m_LocalDestination->CreateStream (streamRequestComplete, address->blindedPublicKey, port);	
-					}
-				});
+						this->m_LocalDestination->CreateStream (streamRequestComplete, address->blindedPublicKey, port);
+				}
+			});
 		}
 		else
-		{	
+		{
 			if (address->IsIdentHash ())
 				m_LocalDestination->CreateStream (streamRequestComplete, address->identHash, port);
 			else
@@ -180,7 +180,7 @@ namespace client
 		{
 			m_up->async_read_some(boost::asio::buffer(m_upstream_to_down_buf, TCP_IP_PIPE_BUFFER_SIZE),
 				std::bind(&TCPIPPipe::HandleUpstreamReceived, shared_from_this(),
-				std::placeholders::_1, std::placeholders::_2));
+					std::placeholders::_1, std::placeholders::_2));
 		}
 		else
 			LogPrint(eLogError, "TCPIPPipe: upstream receive: no socket");
@@ -191,7 +191,7 @@ namespace client
 		if (m_down) {
 			m_down->async_read_some(boost::asio::buffer(m_downstream_to_up_buf, TCP_IP_PIPE_BUFFER_SIZE),
 				std::bind(&TCPIPPipe::HandleDownstreamReceived, shared_from_this(),
-				std::placeholders::_1, std::placeholders::_2));
+					std::placeholders::_1, std::placeholders::_2));
 		}
 		else
 			LogPrint(eLogError, "TCPIPPipe: downstream receive: no socket");
@@ -205,8 +205,8 @@ namespace client
 			boost::asio::async_write(*m_up, boost::asio::buffer(m_upstream_buf, len),
 				boost::asio::transfer_all(),
 				std::bind(&TCPIPPipe::HandleUpstreamWrite,
-				shared_from_this(),
-				std::placeholders::_1));
+					shared_from_this(),
+					std::placeholders::_1));
 		}
 		else
 			LogPrint(eLogError, "TCPIPPipe: upstream write: no socket");
@@ -220,8 +220,8 @@ namespace client
 			boost::asio::async_write(*m_down, boost::asio::buffer(m_downstream_buf, len),
 				boost::asio::transfer_all(),
 				std::bind(&TCPIPPipe::HandleDownstreamWrite,
-				shared_from_this(),
-				std::placeholders::_1));
+					shared_from_this(),
+					std::placeholders::_1));
 		}
 		else
 			LogPrint(eLogError, "TCPIPPipe: downstream write: no socket");

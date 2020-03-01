@@ -152,7 +152,7 @@ namespace log {
 
 	Log & Logger();
 } // log
-}
+} // i2p
 
 /** internal usage only -- folding args array to single string */
 template<typename TValue>

@@ -39,7 +39,7 @@ namespace data
 	{
 		m_Addresses = boost::make_shared<Addresses>(); // create empty list
 		if (len <= MAX_RI_BUFFER_SIZE)
-		{	
+		{
 			m_Buffer = new uint8_t[MAX_RI_BUFFER_SIZE];
 			memcpy (m_Buffer, buf, len);
 			m_BufferLen = len;
@@ -172,7 +172,6 @@ namespace data
 			LogPrint (eLogError, "RouterInfo: malformed message");
 			m_IsUnreachable = true;
 		}
-
 	}
 
 	void RouterInfo::ReadFromStream (std::istream& s)
@@ -191,7 +190,7 @@ namespace data
 			s.read ((char *)&address->cost, sizeof (address->cost));
 			s.read ((char *)&address->date, sizeof (address->date));
 			bool isNTCP2Only = false;
-			char transportStyle[6]; 
+			char transportStyle[6];
 			auto transportStyleLen = ReadString (transportStyle, 6, s) - 1;
 			if (!strncmp (transportStyle, "NTCP", 4)) // NTCP or NTCP2
 			{
@@ -230,13 +229,13 @@ namespace data
 						address->host.to_string (ecode);
 						if (!ecode)
 #endif
-						{	
+						{
 							// add supported protocol
 							if (address->host.is_v4 ())
 								supportedTransports |= (address->transportStyle == eTransportNTCP) ? eNTCPV4 : eSSUV4;
 							else
 								supportedTransports |= (address->transportStyle == eTransportNTCP) ? eNTCPV6 : eSSUV6;
-						}	
+						}
 					}
 				}
 				else if (!strcmp (key, "port"))
@@ -261,15 +260,15 @@ namespace data
 				{
 					if (!address->ntcp2) address->ntcp2.reset (new NTCP2Ext ());
 					supportedTransports |= (address->host.is_v4 ()) ? eNTCP2V4 : eNTCP2V6;
-					Base64ToByteStream (value, strlen (value), address->ntcp2->staticKey, 32);	
-				}	
+					Base64ToByteStream (value, strlen (value), address->ntcp2->staticKey, 32);
+				}
 				else if (!strcmp (key, "i")) // ntcp2 iv
 				{
 					if (!address->ntcp2) address->ntcp2.reset (new NTCP2Ext ());
 					supportedTransports |= (address->host.is_v4 ()) ? eNTCP2V4 : eNTCP2V6;
-					Base64ToByteStream (value, strlen (value), address->ntcp2->iv, 16);	
+					Base64ToByteStream (value, strlen (value), address->ntcp2->iv, 16);
 					address->ntcp2->isPublished = true; // presence if "i" means "published"
-				}	
+				}
 				else if (key[0] == 'i')
 				{
 					// introducers
@@ -277,7 +276,7 @@ namespace data
 					{
 						LogPrint (eLogError, "RouterInfo: Introducer is presented for non-SSU address. Skipped");
 						continue;
-					}	
+					}
 					introducers = true;
 					size_t l = strlen(key);
 					unsigned char index = key[l-1] - '0'; // TODO:
@@ -308,7 +307,7 @@ namespace data
 			}
 			if (introducers) supportedTransports |= eSSUV4; // in case if host is not presented
 			if (isNTCP2Only && address->ntcp2) address->ntcp2->isNTCP2Only = true;
-			if (supportedTransports) 
+			if (supportedTransports)
 			{
 				addresses->push_back(address);
 				m_SupportedTransports |= supportedTransports;
@@ -368,9 +367,9 @@ namespace data
 			SetUnreachable (true);
 	}
 
-  bool RouterInfo::IsFamily(const std::string & fam) const {
-    return m_Family == fam;
-  }
+	bool RouterInfo::IsFamily(const std::string & fam) const {
+		return m_Family == fam;
+	}
 
 	void RouterInfo::ExtractCaps (const char * value)
 	{
@@ -564,7 +563,7 @@ namespace data
 				properties << '=';
 				WriteString (boost::lexical_cast<std::string>(address.port), properties);
 				properties << ';';
-			}	
+			}
 			if (address.IsNTCP2 ())
 			{
 				// publish s and v for NTCP2
@@ -572,7 +571,7 @@ namespace data
 				WriteString (address.ntcp2->staticKey.ToBase64 (), properties); properties << ';';
 				WriteString ("v", properties); properties << '=';
 				WriteString ("2", properties); properties << ';';
-			}	
+			}
 
 			uint16_t size = htobe16 (properties.str ().size ());
 			s.write ((char *)&size, sizeof (size));
@@ -726,7 +725,7 @@ namespace data
 		addr->ntcp2->isNTCP2Only = true; // NTCP2 only address
 		if (port) addr->ntcp2->isPublished = true;
 		memcpy (addr->ntcp2->staticKey, staticKey, 32);
-		memcpy (addr->ntcp2->iv, iv, 16);	
+		memcpy (addr->ntcp2->iv, iv, 16);
 		m_Addresses->push_back(std::move(addr));
 	}
 
@@ -861,7 +860,7 @@ namespace data
 		}
 	}
 
-  void RouterInfo::DisableV4 ()
+	void RouterInfo::DisableV4 ()
 	{
 		if (IsV4 ())
 		{
@@ -910,7 +909,7 @@ namespace data
 			});
 	}
 
-	template<typename Filter>	
+	template<typename Filter>
 	std::shared_ptr<const RouterInfo::Address> RouterInfo::GetAddress (Filter filter) const
 	{
 		// TODO: make it more generic using comparator
@@ -921,7 +920,7 @@ namespace data
 #endif
 		for (const auto& address : *addresses)
 			if (filter (address)) return address;
-		
+
 		return nullptr;
 	}
 

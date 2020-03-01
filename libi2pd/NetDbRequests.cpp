@@ -15,7 +15,7 @@ namespace data
 		if(replyTunnel)
 			msg = i2p::CreateRouterInfoDatabaseLookupMsg (m_Destination,
 			replyTunnel->GetNextIdentHash (), replyTunnel->GetNextTunnelID (), m_IsExploratory,
-		    &m_ExcludedPeers);
+			&m_ExcludedPeers);
 		else
 			msg = i2p::CreateRouterInfoDatabaseLookupMsg(m_Destination, i2p::context.GetIdentHash(), 0, m_IsExploratory, &m_ExcludedPeers);
 		if(router)
@@ -158,4 +158,3 @@ namespace data
 	}
 }
 }
-

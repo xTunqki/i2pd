@@ -30,14 +30,14 @@ namespace data
 	*/
 
 	static const char T64[64] = {
-		       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
-		       'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-		       'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
-		       'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
-		       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-		       'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-		       'w', 'x', 'y', 'z', '0', '1', '2', '3',
-		       '4', '5', '6', '7', '8', '9', '-', '~'
+		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+		'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+		'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+		'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
+		'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+		'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+		'w', 'x', 'y', 'z', '0', '1', '2', '3',
+		'4', '5', '6', '7', '8', '9', '-', '~'
 	};
 
 	const char * GetBase64SubstitutionTable ()
@@ -67,14 +67,12 @@ namespace data
 	*
 	*/
 
-	size_t                                /* Number of bytes in the encoded buffer */
-	ByteStreamToBase64 (
-		    const uint8_t * InBuffer,           /* Input buffer, binary data */
-		    size_t    InCount,              /* Number of bytes in the input buffer */
-		    char  * OutBuffer,          /* output buffer */
-		size_t len			   /* length of output buffer */
+	size_t ByteStreamToBase64 (   /* Number of bytes in the encoded buffer */
+		const uint8_t * InBuffer, /* Input buffer, binary data */
+		size_t    InCount,        /* Number of bytes in the input buffer */
+		char  * OutBuffer,        /* output buffer */
+		size_t len                /* length of output buffer */
 	)
-
 	{
 		unsigned char * ps;
 		unsigned char * pd;
@@ -83,55 +81,60 @@ namespace data
 		int             i;
 		int             n;
 		int             m;
-		size_t outCount;
+		size_t          outCount;
 
 		ps = (unsigned char *)InBuffer;
 		n = InCount/3;
 		m = InCount%3;
 		if (!m)
-		     outCount = 4*n;
+			outCount = 4*n;
 		else
-		     outCount = 4*(n+1);
+			outCount = 4*(n+1);
+
 		if (outCount > len) return 0;
+
 		pd = (unsigned char *)OutBuffer;
-		for ( i = 0; i<n; i++ ){
-		     acc_1 = *ps++;
-		     acc_2 = (acc_1<<4)&0x30;
-		     acc_1 >>= 2;              /* base64 digit #1 */
-		     *pd++ = T64[acc_1];
-		     acc_1 = *ps++;
-		     acc_2 |= acc_1 >> 4;      /* base64 digit #2 */
-		     *pd++ = T64[acc_2];
-		     acc_1 &= 0x0f;
-		     acc_1 <<=2;
-		     acc_2 = *ps++;
-		     acc_1 |= acc_2>>6;        /* base64 digit #3 */
-		     *pd++ = T64[acc_1];
-		     acc_2 &= 0x3f;            /* base64 digit #4 */
-		     *pd++ = T64[acc_2];
+		for ( i = 0; i<n; i++ )
+		{
+			acc_1 = *ps++;
+			acc_2 = (acc_1<<4)&0x30;
+			acc_1 >>= 2;              /* base64 digit #1 */
+			*pd++ = T64[acc_1];
+			acc_1 = *ps++;
+			acc_2 |= acc_1 >> 4;      /* base64 digit #2 */
+			*pd++ = T64[acc_2];
+			acc_1 &= 0x0f;
+			acc_1 <<=2;
+			acc_2 = *ps++;
+			acc_1 |= acc_2>>6;        /* base64 digit #3 */
+			*pd++ = T64[acc_1];
+			acc_2 &= 0x3f;            /* base64 digit #4 */
+			*pd++ = T64[acc_2];
 		}
-		if ( m == 1 ){
-		     acc_1 = *ps++;
-		     acc_2 = (acc_1<<4)&0x3f;  /* base64 digit #2 */
-		     acc_1 >>= 2;              /* base64 digit #1 */
-		     *pd++ = T64[acc_1];
-		     *pd++ = T64[acc_2];
-		     *pd++ = P64;
-		     *pd++ = P64;
+		if ( m == 1 )
+		{
+			acc_1 = *ps++;
+			acc_2 = (acc_1<<4)&0x3f;  /* base64 digit #2 */
+			acc_1 >>= 2;              /* base64 digit #1 */
+			*pd++ = T64[acc_1];
+			*pd++ = T64[acc_2];
+			*pd++ = P64;
+			*pd++ = P64;
 
 		}
-		else if ( m == 2 ){
-		     acc_1 = *ps++;
-		     acc_2 = (acc_1<<4)&0x3f;
-		     acc_1 >>= 2;              /* base64 digit #1 */
-		     *pd++ = T64[acc_1];
-		     acc_1 = *ps++;
-		     acc_2 |= acc_1 >> 4;      /* base64 digit #2 */
-		     *pd++ = T64[acc_2];
-		     acc_1 &= 0x0f;
-		     acc_1 <<=2;               /* base64 digit #3 */
-		     *pd++ = T64[acc_1];
-		     *pd++ = P64;
+		else if ( m == 2 )
+		{
+			acc_1 = *ps++;
+			acc_2 = (acc_1<<4)&0x3f;
+			acc_1 >>= 2;              /* base64 digit #1 */
+			*pd++ = T64[acc_1];
+			acc_1 = *ps++;
+			acc_2 |= acc_1 >> 4;      /* base64 digit #2 */
+			*pd++ = T64[acc_2];
+			acc_1 &= 0x0f;
+			acc_1 <<=2;               /* base64 digit #3 */
+			*pd++ = T64[acc_1];
+			*pd++ = P64;
 		}
 
 		return outCount;
@@ -147,12 +150,11 @@ namespace data
 	*
 	*/
 
-	size_t                              /* Number of output bytes */
-	Base64ToByteStream (
-		      const char * InBuffer,           /* BASE64 encoded buffer */
-		      size_t    InCount,          /* Number of input bytes */
-		      uint8_t  * OutBuffer,	/* output buffer length */
-		  size_t len         	/* length of output buffer */
+	size_t Base64ToByteStream ( /* Number of output bytes */
+		const char * InBuffer,  /* BASE64 encoded buffer */
+		size_t InCount,         /* Number of input bytes */
+		uint8_t * OutBuffer,    /* output buffer length */
+		size_t len              /* length of output buffer */
 	)
 	{
 		unsigned char * ps;
@@ -162,16 +164,17 @@ namespace data
 		int             i;
 		int             n;
 		int             m;
-		size_t outCount;
+		size_t          outCount;
 
 		if (isFirstTime) iT64Build();
 		n = InCount/4;
 		m = InCount%4;
 		if (InCount && !m)
-		     outCount = 3*n;
-		else {
-		     outCount = 0;
-		     return 0;
+			outCount = 3*n;
+		else
+		{
+			outCount = 0;
+			return 0;
 		}
 
 		ps = (unsigned char *)(InBuffer + InCount - 1);
@@ -182,22 +185,22 @@ namespace data
 		pd = OutBuffer;
 		auto endOfOutBuffer = OutBuffer + outCount;
 		for ( i = 0; i < n; i++ ){
-		     acc_1 = iT64[*ps++];
-		     acc_2 = iT64[*ps++];
-		     acc_1 <<= 2;
-		     acc_1 |= acc_2>>4;
-		     *pd++  = acc_1;
-			 if (pd >= endOfOutBuffer) break;
+			acc_1 = iT64[*ps++];
+			acc_2 = iT64[*ps++];
+			acc_1 <<= 2;
+			acc_1 |= acc_2>>4;
+			*pd++  = acc_1;
+			if (pd >= endOfOutBuffer) break;
 
-		     acc_2 <<= 4;
-		     acc_1 = iT64[*ps++];
-		     acc_2 |= acc_1 >> 2;
-		     *pd++ = acc_2;
-			  if (pd >= endOfOutBuffer) break;
+			acc_2 <<= 4;
+			acc_1 = iT64[*ps++];
+			acc_2 |= acc_1 >> 2;
+			*pd++ = acc_2;
+			if (pd >= endOfOutBuffer) break;
 
-		     acc_2 = iT64[*ps++];
-		     acc_2 |= acc_1 << 6;
-		     *pd++ = acc_2;
+			acc_2 = iT64[*ps++];
+			acc_2 |= acc_1 << 6;
+			*pd++ = acc_2;
 		}
 
 		return outCount;
@@ -212,7 +215,7 @@ namespace data
 
 	std::string ToBase64Standard (const std::string& in)
 	{
-		auto len = Base64EncodingBufferSize (in.length ());	
+		auto len = Base64EncodingBufferSize (in.length ());
 		char * str = new char[len+1];
 		auto l = ByteStreamToBase64 ((const uint8_t *)in.c_str (), in.length (), str, len);
 		str[l] = 0;
@@ -302,4 +305,3 @@ namespace data
 	}
 }
 }
-

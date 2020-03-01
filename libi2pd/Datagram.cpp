@@ -26,7 +26,7 @@ namespace datagram
 		auto owner = m_Owner;
 		std::vector<uint8_t> v(MAX_DATAGRAM_SIZE);
 		uint8_t * buf = v.data();
-		auto localIdentity =  m_Owner->GetIdentity ();		
+		auto localIdentity =  m_Owner->GetIdentity ();
 		auto identityLen = localIdentity->ToBuffer (buf, MAX_DATAGRAM_SIZE);
 		uint8_t * signature = buf + identityLen;
 		auto signatureLen = localIdentity->GetSignatureLen ();
@@ -53,8 +53,8 @@ namespace datagram
 		auto msg = CreateDataMessage (payload, len, fromPort, toPort, true); // raw
 		auto session = ObtainSession(identity);
 		session->SendMsg(msg);
-	}	
-		
+	}
+
 	void DatagramDestination::HandleDatagram (uint16_t fromPort, uint16_t toPort,uint8_t * const &buf, size_t len)
 	{
 		i2p::data::IdentityEx identity;
@@ -93,8 +93,8 @@ namespace datagram
 			m_RawReceiver (fromPort, toPort, buf, len);
 		else
 			LogPrint (eLogWarning, "DatagramDestination: no receiver for raw datagram");
-	}	
-		
+	}
+
 	DatagramDestination::Receiver DatagramDestination::FindReceiver(uint16_t port)
 	{
 		std::lock_guard<std::mutex> lock(m_ReceiversMutex);
@@ -114,14 +114,14 @@ namespace datagram
 		{
 			if (isRaw)
 				HandleRawDatagram (fromPort, toPort, uncompressed, uncompressedLen);
-			else	
+			else
 				HandleDatagram (fromPort, toPort, uncompressed, uncompressedLen);
-		}	
+		}
 		else
 			LogPrint (eLogWarning, "Datagram: decompression failed");
 	}
 
-		
+
 	std::shared_ptr<I2NPMessage> DatagramDestination::CreateDataMessage (const uint8_t * payload, size_t len, uint16_t fromPort, uint16_t toPort, bool isRaw)
 	{
 		auto msg = NewI2NPMessage ();
@@ -190,7 +190,7 @@ namespace datagram
 	}
 
 	DatagramSession::DatagramSession(std::shared_ptr<i2p::client::ClientDestination> localDestination,
-																	 const i2p::data::IdentHash & remoteIdent) :
+		const i2p::data::IdentHash & remoteIdent) :
 		m_LocalDestination(localDestination),
 		m_RemoteIdent(remoteIdent),
 		m_SendQueueTimer(localDestination->GetService()),
@@ -385,4 +385,3 @@ namespace datagram
 	}
 }
 }
-

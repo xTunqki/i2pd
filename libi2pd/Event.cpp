@@ -58,4 +58,3 @@ void EmitEvent(const EventType & e)
 	i2p::event::core.QueueEvent(e);
 #endif
 }
-

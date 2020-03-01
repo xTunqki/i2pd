@@ -215,10 +215,10 @@ namespace data
 					LogPrint (eLogDebug, "NetDb: RouterInfo floodfill status updated: ", ident.ToBase64());
 					std::unique_lock<std::mutex> l(m_FloodfillsMutex);
 					if (wasFloodfill)
-						m_Floodfills.remove (r);	
-					else	
+						m_Floodfills.remove (r);
+					else
 						m_Floodfills.push_back (r);
-				}	
+				}
 			}
 			else
 			{
@@ -389,7 +389,7 @@ namespace data
 			}
 		}
 
-                m_Reseeder->Bootstrap ();
+		m_Reseeder->Bootstrap ();
 	}
 
 	void NetDb::ReseedFromFloodfill(const RouterInfo & ri, int numRouters, int numFloodfills)
@@ -531,12 +531,12 @@ namespace data
 		auto total = m_RouterInfos.size ();
 		uint64_t expirationTimeout = NETDB_MAX_EXPIRATION_TIMEOUT*1000LL;
 		uint64_t ts = i2p::util::GetMillisecondsSinceEpoch();
-		auto uptime = i2p::context.GetUptime ();	
+		auto uptime = i2p::context.GetUptime ();
 		// routers don't expire if less than 90 or uptime is less than 1 hour
 		bool checkForExpiration = total > NETDB_MIN_ROUTERS && uptime > 600; // 10 minutes
 		if (checkForExpiration && uptime > 3600) // 1 hour
 			expirationTimeout = i2p::context.IsFloodfill () ? NETDB_FLOODFILL_EXPIRATION_TIMEOUT*1000LL :
-					NETDB_MIN_EXPIRATION_TIMEOUT*1000LL + (NETDB_MAX_EXPIRATION_TIMEOUT - NETDB_MIN_EXPIRATION_TIMEOUT)*1000LL*NETDB_MIN_ROUTERS/total;
+				NETDB_MIN_EXPIRATION_TIMEOUT*1000LL + (NETDB_MAX_EXPIRATION_TIMEOUT - NETDB_MIN_EXPIRATION_TIMEOUT)*1000LL*NETDB_MIN_ROUTERS/total;
 
 		for (auto& it: m_RouterInfos)
 		{
@@ -1092,7 +1092,7 @@ namespace data
 			{
 				return !router->IsHidden () && router->IsSSUV6 ();
 			});
-	}		
+	}
 
 	std::shared_ptr<const RouterInfo> NetDb::GetRandomIntroducer () const
 	{

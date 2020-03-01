@@ -11,21 +11,20 @@
 #include <cstring>
 #include "Crypto.h"
 
-#if !OPENSSL_AEAD_CHACHA20_POLY1305 
+#if !OPENSSL_AEAD_CHACHA20_POLY1305
 namespace i2p
 {
 namespace crypto
 {
-	const std::size_t POLY1305_DIGEST_BYTES = 16;
-	const std::size_t POLY1305_DIGEST_DWORDS = 4;
-	const std::size_t POLY1305_KEY_BYTES = 32;
-	const std::size_t POLY1305_KEY_DWORDS = 8;
-	const std::size_t POLY1305_BLOCK_BYTES = 16;
+const std::size_t POLY1305_DIGEST_BYTES = 16;
+const std::size_t POLY1305_DIGEST_DWORDS = 4;
+const std::size_t POLY1305_KEY_BYTES = 32;
+const std::size_t POLY1305_KEY_DWORDS = 8;
+const std::size_t POLY1305_BLOCK_BYTES = 16;
 
-	namespace poly1305
-	{
-
-		struct LongBlock
+namespace poly1305
+{
+	struct LongBlock
 		{
 			unsigned long data[17];
 			operator unsigned long * ()
@@ -252,8 +251,8 @@ namespace crypto
 		poly1305::LongBlock m_HR;
 		uint8_t m_Final;
 	};
-	void Poly1305HMAC(uint64_t * out, const uint64_t * key, const uint8_t * buf, std::size_t sz);
 
+	void Poly1305HMAC(uint64_t * out, const uint64_t * key, const uint8_t * buf, std::size_t sz);
 }
 }
 #endif

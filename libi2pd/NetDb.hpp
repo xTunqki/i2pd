@@ -61,13 +61,13 @@ namespace data
 			std::shared_ptr<RouterProfile> FindRouterProfile (const IdentHash& ident) const;
 
 			void RequestDestination (const IdentHash& destination, RequestedDestination::RequestComplete requestComplete = nullptr);
-		void RequestDestinationFrom (const IdentHash& destination, const IdentHash & from, bool exploritory, RequestedDestination::RequestComplete requestComplete = nullptr);
+			void RequestDestinationFrom (const IdentHash& destination, const IdentHash & from, bool exploritory, RequestedDestination::RequestComplete requestComplete = nullptr);
 
 			void HandleDatabaseStoreMsg (std::shared_ptr<const I2NPMessage> msg);
 			void HandleDatabaseSearchReplyMsg (std::shared_ptr<const I2NPMessage> msg);
 			void HandleDatabaseLookupMsg (std::shared_ptr<const I2NPMessage> msg);
 			void HandleNTCP2RouterInfoMsg (std::shared_ptr<const I2NPMessage> m);
-		
+
 			std::shared_ptr<const RouterInfo> GetRandomRouter () const;
 			std::shared_ptr<const RouterInfo> GetRandomRouter (std::shared_ptr<const RouterInfo> compatibleWith) const;
 			std::shared_ptr<const RouterInfo> GetHighBandwidthRandomRouter (std::shared_ptr<const RouterInfo> compatibleWith) const;
@@ -78,13 +78,13 @@ namespace data
 			std::vector<IdentHash> GetClosestFloodfills (const IdentHash& destination, size_t num,
 				std::set<IdentHash>& excluded, bool closeThanUsOnly = false) const;
 			std::shared_ptr<const RouterInfo> GetClosestNonFloodfill (const IdentHash& destination, const std::set<IdentHash>& excluded) const;
-      std::shared_ptr<const RouterInfo> GetRandomRouterInFamily(const std::string & fam) const;
+			std::shared_ptr<const RouterInfo> GetRandomRouterInFamily(const std::string & fam) const;
 			void SetUnreachable (const IdentHash& ident, bool unreachable);
 
 			void PostI2NPMsg (std::shared_ptr<const I2NPMessage> msg);
 
-      /** set hidden mode, aka don't publish our RI to netdb and don't explore */
-      void SetHidden(bool hide);
+			/** set hidden mode, aka don't publish our RI to netdb and don't explore */
+			void SetHidden(bool hide);
 
 			void Reseed ();
 			Families& GetFamilies () { return m_Families; };
@@ -121,8 +121,9 @@ namespace data
 
 			std::shared_ptr<const RouterInfo> AddRouterInfo (const uint8_t * buf, int len, bool& updated);
 			std::shared_ptr<const RouterInfo> AddRouterInfo (const IdentHash& ident, const uint8_t * buf, int len, bool& updated);
-    		template<typename Filter>
-        	std::shared_ptr<const RouterInfo> GetRandomRouter (Filter filter) const;
+
+			template<typename Filter>
+			std::shared_ptr<const RouterInfo> GetRandomRouter (Filter filter) const;
 
 		private:
 
@@ -148,12 +149,12 @@ namespace data
 
 			bool m_PersistProfiles;
 
-		/** router info we are bootstrapping from or nullptr if we are not currently doing that*/
-		std::shared_ptr<RouterInfo> m_FloodfillBootstrap;
+			/** router info we are bootstrapping from or nullptr if we are not currently doing that*/
+			std::shared_ptr<RouterInfo> m_FloodfillBootstrap;
 
 
-      /** true if in hidden mode */
-      bool m_HiddenMode;
+			/** true if in hidden mode */
+			bool m_HiddenMode;
 	};
 
 	extern NetDb netdb;

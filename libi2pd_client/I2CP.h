@@ -68,10 +68,10 @@ namespace client
 
 			I2CPDestination (std::shared_ptr<I2CPSession> owner, std::shared_ptr<const i2p::data::IdentityEx> identity, bool isPublic, const std::map<std::string, std::string>& params);
 			~I2CPDestination ();
-			
+
 			void Start ();
 			void Stop ();
-			
+
 			void SetEncryptionPrivateKey (const uint8_t * key);
 			void SetEncryptionType (i2p::data::CryptoKeyType keyType) { m_EncryptionKeyType = keyType; };
 			void LeaseSetCreated (const uint8_t * buf, size_t len); // called from I2CPSession
@@ -218,4 +218,3 @@ namespace client
 }
 
 #endif
-

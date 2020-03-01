@@ -9,25 +9,26 @@ namespace i2p
 {
 namespace client
 {
-
 	class WebSocksImpl;
 
 	/** @brief websocket socks proxy server */
 	class WebSocks : public i2p::client::I2PService
 	{
-	public:
-		WebSocks(const std::string & addr, int port, std::shared_ptr<ClientDestination> localDestination);
-		~WebSocks();
+		public:
 
-		void Start();
-		void Stop();
+			WebSocks(const std::string & addr, int port, std::shared_ptr<ClientDestination> localDestination);
+			~WebSocks();
 
-		boost::asio::ip::tcp::endpoint GetLocalEndpoint() const;
+			void Start();
+			void Stop();
 
-		const char * GetName() { return "WebSOCKS Proxy"; }
+			boost::asio::ip::tcp::endpoint GetLocalEndpoint() const;
 
-	private:
-		WebSocksImpl * m_Impl;
+			const char * GetName() { return "WebSOCKS Proxy"; }
+
+		private:
+		
+			WebSocksImpl * m_Impl;
 	};
 }
 }

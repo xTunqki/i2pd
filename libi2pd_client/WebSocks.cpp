@@ -84,10 +84,10 @@ namespace client
 			auto a = addressbook.GetAddress (addr);
 			if (a && a->IsIdentHash ())
 			{
-				// address found				
+				// address found
 				m_Dest->CreateStream(complete, a->identHash, port);
 			}
-			else 
+			else
 			{
 				// not found
 				complete(nullptr);
@@ -145,7 +145,7 @@ namespace client
 			if(!dgram) dgram = m_Dest->CreateDatagramDestination();
 			return dgram;
 		}
-		
+
 		WebSocks * Parent;
 
 	private:
@@ -219,7 +219,7 @@ namespace client
 				conn->send(ss.str());
 			}
 		}
-		
+
 		void BeginDatagram()
 		{
 			m_Datagram = m_Parent->GetDatagramDest();
@@ -350,7 +350,7 @@ namespace client
 
 				std::string str((char*)m_RecvBuf, n);
 				auto conn = m_Parent->GetConn(m_Conn);
-				if(!conn)	 {
+				if(!conn) {
 					LogPrint(eLogWarning, "websocks: connection is gone");
 					EnterState(eWSCClose);
 					return;
@@ -556,4 +556,3 @@ namespace client
 	}
 }
 }
-
