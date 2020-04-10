@@ -6,49 +6,74 @@ os:
 #- osx
 dist: xenial
 sudo: required
-compiler:
-- g++
-- clang++
-env:
-  global:
-  - MAKEFLAGS="-j 2"
-  matrix:
-  - BUILD_TYPE=make UPNP=ON MAKE_UPNP=yes
-  - BUILD_TYPE=make UPNP=OFF MAKE_UPNP=no
-  - BUILD_TYPE=cmake UPNP=ON MAKE_UPNP=yes
-  - BUILD_TYPE=cmake UPNP=OFF MAKE_UPNP=no
-matrix:
-  exclude:
-  - os: osx
-    env: BUILD_TYPE=cmake UPNP=ON MAKE_UPNP=yes
-  - os: osx
-    env: BUILD_TYPE=cmake UPNP=OFF MAKE_UPNP=no
-  - os: linux
-    compiler: clang++
-    env: BUILD_TYPE=make UPNP=ON MAKE_UPNP=yes
-  - os: linux
-    compiler: clang++
-    env: BUILD_TYPE=make UPNP=OFF MAKE_UPNP=no
-addons:
-  apt:
-    packages:
-    - build-essential
-    - cmake
-    - g++
-    - clang
-    - libboost-chrono-dev
-    - libboost-date-time-dev
-    - libboost-filesystem-dev
-    - libboost-program-options-dev
-    - libboost-system-dev
-    - libboost-thread-dev
-    - libminiupnpc-dev
-    - libssl-dev
-before_install:
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install libressl miniupnpc ; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew outdated boost || brew upgrade boost ; fi
-script:
-- if [[ "$TRAVIS_OS_NAME" == "linux" && "$BUILD_TYPE" == "cmake" ]]; then cd build && cmake -DCMAKE_BUILD_TYPE=Release -DWITH_UPNP=${UPNP} && make ; fi
-- if [[ "$TRAVIS_OS_NAME" == "linux" && "$BUILD_TYPE" == "make" ]]; then make USE_UPNP=${MAKE_UPNP} ; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make HOMEBREW=1 USE_UPNP=${MAKE_UPNP} ; fi
+
+jobs:
+  include:
+    - language: cpp
+      compiler:
+      - g++
+      - clang++
+      env:
+        global:
+        - MAKEFLAGS="-j 2"
+        matrix:
+        - BUILD_TYPE=make UPNP=ON MAKE_UPNP=yes
+        - BUILD_TYPE=make UPNP=OFF MAKE_UPNP=no
+        - BUILD_TYPE=cmake UPNP=ON MAKE_UPNP=yes
+        - BUILD_TYPE=cmake UPNP=OFF MAKE_UPNP=no
+      matrix:
+        exclude:
+        - os: osx
+          env: BUILD_TYPE=cmake UPNP=ON MAKE_UPNP=yes
+        - os: osx
+          env: BUILD_TYPE=cmake UPNP=OFF MAKE_UPNP=no
+        - os: linux
+          compiler: clang++
+          env: BUILD_TYPE=make UPNP=ON MAKE_UPNP=yes
+        - os: linux
+          compiler: clang++
+          env: BUILD_TYPE=make UPNP=OFF MAKE_UPNP=no
+      addons:
+        apt:
+          packages:
+          - build-essential
+          - cmake
+          - g++
+          - clang
+          - libboost-chrono-dev
+          - libboost-date-time-dev
+          - libboost-filesystem-dev
+          - libboost-program-options-dev
+          - libboost-system-dev
+          - libboost-thread-dev
+          - libminiupnpc-dev
+          - libssl-dev
+      before_install:
+      - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
+      - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install libressl miniupnpc ; fi
+      - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew outdated boost || brew upgrade boost ; fi
+      script:
+      - if [[ "$TRAVIS_OS_NAME" == "linux" && "$BUILD_TYPE" == "cmake" ]]; then cd build && cmake -DCMAKE_BUILD_TYPE=Release -DWITH_UPNP=${UPNP} && make ; fi
+      - if [[ "$TRAVIS_OS_NAME" == "linux" && "$BUILD_TYPE" == "make" ]]; then make USE_UPNP=${MAKE_UPNP} ; fi
+      - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make HOMEBREW=1 USE_UPNP=${MAKE_UPNP} ; fi
+    - language: android
+      jdk: openjdk8
+      android:
+        components:
+        - tools
+        - platform-tools
+        - build-tools-28.0.3
+        - android-29
+        - extra-android-m2repository
+        - extra-google-m2repository
+        licenses:
+        - 'android-sdk-license-.+'
+      before_install:
+      - yes | sdkmanager "platforms;android-28"
+      - git clone https://github.com/PurpleI2P/Boost-for-Android-Prebuilt.git -b boost-1_72_0
+      - git clone https://github.com/PurpleI2P/OpenSSL-for-Android-Prebuilt.git
+      - git clone https://github.com/PurpleI2P/MiniUPnP-for-Android-Prebuilt.git
+      - git clone https://github.com/PurpleI2P/android-ifaddrs.git
+      - sed -i 's/\/path\/to\/libraries/../g' android/jni/Application.mk
+      script:
+      - cd android && ./gradlew clean assembleDebug
